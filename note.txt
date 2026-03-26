@@ -1,0 +1,6 @@
+
+1.  create the base layout
+2.  ad css to visualize
+3.  how do i create pieces???(w3schools chess symbols)
+4.  how can I bring pieces to their position?
+5.    
