@@ -34,3 +34,22 @@ thead th:first-child,
 tfoot th:first-child{
     background-color: rgb(39, 36, 36);
 }
+
+#controls{
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+button{
+    padding: 10px 15px;
+    background-color: rgb(173, 168, 168);
+    color: black;
+    border: 1px solid black;
+    cursor: pointer;
+    font-family: sans-serif;
+    border-radius: 20px;
+}
+button:hover{
+    background-color: rgb(138, 133, 133);
+    color: white;
+}
