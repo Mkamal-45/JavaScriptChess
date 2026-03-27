@@ -12,7 +12,6 @@ function createBoard(){
         ["", "", "", "", "", "", "", ""],
         ["", "", "", "", "", "", "", ""],
         ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
         [pieces.w_p, pieces.w_p, pieces.w_p, pieces.w_p, pieces.w_p, pieces.w_p, pieces.w_p, pieces.w_p],
         [pieces.w_r, pieces.w_kn, pieces.w_b, pieces.w_q, pieces.w_k, pieces.w_b, pieces.w_kn, pieces.w_r]
     ];
