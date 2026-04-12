@@ -101,7 +101,8 @@ function handleSquareClick(element){
             alert(`It is ${currentTurn}'s turn!! Moving opponent's pieces is against the rules.`);
         }
     }
-
+    //added piece owner logic and turn enforcement but had a merge state issue which is my fault so the
+    //trying to commit that again.
 }
 createBoard();
 
