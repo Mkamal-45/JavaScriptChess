@@ -12,6 +12,9 @@ let selectedSquare= null;
 let gameStarted= false;
 let gameType= "";
 let currentTurn= "white";
+let whiteTime=300;
+let blackTime= 300;
+let timerInterval= null;
 function createBoard(){
     const board=[
         [pieces.b_r, pieces.b_kn, pieces.b_b, pieces.b_q, pieces.b_k, pieces.b_b, pieces.b_kn, pieces.b_r],
@@ -45,18 +48,49 @@ function createBoard(){
     }
     
 }
-/*let selectedSquare= null;
-let gameStarted= false;
-let gameType= "";
-let currentTurn= "white"; for my visual sake */
+function updateTimerDisplay(){
+    let wMin= Math.floor(whiteTime/60);
+    let wSec=whiteTime%60;
+    let bMin= Math.floor(blackTime/60);
+    let bSec=blackTime%60;
+
+    document.getElementById("timer-white").innerText = "White: " + wMin + ":" + (wSec < 10 ? "0" : "") + wSec;
+    document.getElementById("timer-black").innerText = "Black: " + bMin + ":" + (bSec < 10 ? "0" : "") + bSec;
+}
+function startClocks(){
+    if (timerInterval !== null) clearInterval(timerInterval);
+    timerInterval= setInterval(function(){
+        if(gameStarted){
+            if(currentTurn==="white"){
+                whiteTime--;
+            }else{
+                blackTime--;
+            }
+            updateTimerDisplay();
+            if(whiteTime<=0|| blackTime<=0){
+                clearInterval(timerInterval);
+                gameStarted=false;
+                alert("Time is up! GAME OVER.");
+
+            }
+        }
+    }, 1000);
+}
 function startGame(type){
     gameStarted= true;
     gameType= type;
+    currentTurn="white";
     if(type=== "blitz"){
-        document.getElementById("timer-container");
+        document.getElementById("timer-container").style.display="block";
+        whiteTime=300;
+        blackTime=300;
+        updateTimerDisplay();
+        startClocks();
+    }else{
+        document.getElementById("timer-container").style.display="none";
+        clearInterval(timerInterval);
     }
-    alert("Game Started!" + type + "mode activated. White's Turn");
-
+    alert(`Game Started! + ${type} + mode activated. White's Turn`);
 }
 
 function restartgame(){
@@ -66,7 +100,7 @@ function restartgame(){
 function forfeitGame(){
     if (!gameStarted)
         return;
-    alert(currentTurn + " has forfeited. Game Over!");
+    alert(`${currentTurn} +  has forfeited. Game Over!`);
     gameStarted=false;
 }
 
@@ -101,8 +135,6 @@ function handleSquareClick(element){
             alert(`It is ${currentTurn}'s turn!! Moving opponent's pieces is against the rules.`);
         }
     }
-    //added piece owner logic and turn enforcement but had a merge state issue which is my fault so the
-    //trying to commit that again.
 }
 createBoard();
 
