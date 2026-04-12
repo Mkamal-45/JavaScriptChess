@@ -37,13 +37,13 @@ function createBoard(){
             const td= document.createElement('td'); //table_data cells created for playable sqrs
             let piece= currentRow[j];
             td.textContent= piece;
+            td.dataset.row = i;
+            td.dataset.col = j;
             td.onclick= function(){
                 handleSquareClick(td);
             };
             tr.appendChild(td);
-
         }
-
         boardBody.appendChild(tr);
     }
     
@@ -90,7 +90,7 @@ function startGame(type){
         document.getElementById("timer-container").style.display="none";
         clearInterval(timerInterval);
     }
-    alert(`Game Started! + ${type} + mode activated. White's Turn`);
+    alert(`Game Started! ${type}  mode activated. White's Turn`);
 }
 
 function restartgame(){
@@ -104,6 +104,26 @@ function forfeitGame(){
     gameStarted=false;
 }
 
+function isValidMove(startSquare, targetSquare){
+    let piece= startSquare.textContent
+    let startRow= +startSquare.dataset.row;
+    let startCol= +startSquare.dataset.col;
+    let endRow= +targetSquare.dataset.row;
+    let endCol= +targetSquare.dataset.col;
+    let rowDiff= Math.abs(startRow- endRow);//returns absolute value of num
+    let colDiff= Math.abs(startCol- endCol);
+    //knight moves in L shape, any direction,if it takes 2steps first , 
+    //1step for final pos and vice-versa
+    if(piece==="♘"|| piece==="♞"){
+        if((rowDiff===2 && colDiff===1) || (rowDiff===1 && colDiff===2)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    return true;
+}
+
 function handleSquareClick(element){
     if(!gameStarted){
         alert("Please select a game type!");
@@ -114,6 +134,28 @@ function handleSquareClick(element){
         if (selectedSquare === element){
             selectedSquare = null;
             return;
+        }
+        let targetPiece= element.textContent;
+        if(currentTurn==="white"&& whitePiecesList.includes(targetPiece)){
+            selectedSquare= element;
+            return;
+        }
+        if(currentTurn==="black"&& blackPiecesList.includes(targetPiece)){
+            selectedSquare= element;
+            return;
+        }
+        if (!isValidMove(selectedSquare, element)) {
+            alert("Invalid move! That piece cannot move there.");
+            return;
+        }
+        if (targetPiece === "♔") {
+            alert("Black captures the White King! Black Wins!");
+            gameStarted = false; 
+            clearInterval(timerInterval);
+        } else if (targetPiece === "♚") {
+            alert("White captures the Black King! White Wins!");
+            gameStarted = false;
+            clearInterval(timerInterval);
         }
         element.textContent= selectedSquare.textContent;
         selectedSquare.textContent= "";
