@@ -3,6 +3,9 @@ const pieces={
     b_k: "♚", b_q: "♛", b_r: "♜", b_b: "♝", b_kn: "♞" ,b_p: "♟"
 };
 
+const whitePiecesList=["♔", "♕", "♖", "♗", "♘", "♙"];
+const blackPiecesList=["♚", "♛", "♜", "♝", "♞", "♟"]
+
 const boardBody= document.getElementById("board-body");
 //state variables
 let selectedSquare= null;
@@ -84,11 +87,22 @@ function handleSquareClick(element){
         currentTurn= (currentTurn==="white")? "black":"white";
         console.log("Turn:  "+ currentTurn);
     }else{
-        if(element.textContent!==""){
+        let pieceClicked= element.textContent;
+        if (pieceClicked===""){
+            return;
+        }
+        if (currentTurn==="white" && whitePiecesList.includes(pieceClicked)){
             selectedSquare= element;
         }
+        else if(currentTurn==="black" && blackPiecesList.includes(pieceClicked)){
+            selectedSquare= element;
+        }
+        else{
+            alert(`It is ${currentTurn}'s turn!! Moving opponent's pieces is against the rules.`);
+        }
     }
-
+    //added piece owner logic and turn enforcement but had a merge state issue which is my fault so the
+    //trying to commit that again.
 }
 createBoard();
 
