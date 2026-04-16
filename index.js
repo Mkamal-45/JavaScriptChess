@@ -6,7 +6,7 @@ const pieces={
 const whitePiecesList=["♔", "♕", "♖", "♗", "♘", "♙"];
 const blackPiecesList=["♚", "♛", "♜", "♝", "♞", "♟"]
 
-const boardBody= document.getElementById("board-body");
+let boardBody= document.getElementById("board-body");
 //state variables
 let selectedSquare= null;
 let gameStarted= false;
@@ -28,7 +28,7 @@ function createBoard(){
     ];
 
     for(let i=0; i< board.length; i++){
-        const tr= document.createElement('tr');
+        let tr= document.createElement('tr');
         const rowLabel= document.createElement('th');
         rowLabel.innerText= 8-i;
         tr.appendChild(rowLabel);
@@ -88,8 +88,8 @@ function startGame(type){
         startClocks();
     }else{
         document.getElementById("timer-container").style.display="block";
-        whiteTime=5400000;
-        blackTime=5400000;
+        whiteTime=5400;
+        blackTime=5400;
         updateTimerDisplay();
         startClocks();
     }
@@ -103,7 +103,7 @@ function restartGame(){
 function forfeitGame(){
     if (!gameStarted)
         return;
-    alert(`${currentTurn} +  has forfeited. Game Over!`);
+    alert(`${currentTurn} has forfeited. Game Over!`);
     gameStarted=false;
 }
 
@@ -251,6 +251,6 @@ document.getElementById("btn-blitz").addEventListener("click", () => {
 document.getElementById("btn-restart").addEventListener("click", () => {
     restartGame();
 });
-document.getElementById("btn-standard").addEventListener("click", () => {
+document.getElementById("btn-forfeit").addEventListener("click", () => {
     forfeitGame();
 });
