@@ -5,6 +5,12 @@ const pieces={
 
 const whitePiecesList=["♔", "♕", "♖", "♗", "♘", "♙"];
 const blackPiecesList=["♚", "♛", "♜", "♝", "♞", "♟"]
+const pieceImages = {
+    "♔": "images/w_king.png", "♕": "images/w_queen.png", "♖": "images/w_rook.png", 
+    "♗": "images/w_bishop.png", "♘": "images/w_knight.png", "♙": "images/w_pawn.png",
+    "♚": "images/b_king.png", "♛": "images/b_queen.png", "♜": "images/b_rook.png", 
+    "♝": "images/b_bishop.png", "♞": "images/b_knight.png", "♟": "images/b_pawn.png"
+};
 
 let boardBody= document.getElementById("board-body");
 //state variables
@@ -36,9 +42,14 @@ function createBoard(){
         for(let j=0; j < currentRow.length; j++){ 
             const td= document.createElement('td'); //table_data cells created for playable sqrs
             let piece= currentRow[j];
-            td.textContent= piece;
+            td.dataset.piece= piece;
             td.dataset.row = i;
             td.dataset.col = j;
+            if (piece!==""){
+                let img= document.createElement("img");
+                img.src= pieceImages[piece];
+                td.appendChild(img);
+            }
             td.onclick= function(){
                 handleSquareClick(td);
             };
@@ -106,9 +117,35 @@ function forfeitGame(){
     alert(`${currentTurn} has forfeited. Game Over!`);
     gameStarted=false;
 }
+function offerDraw() {
+    if (!gameStarted) return;
+    
+    alert("Players have agreed to a Draw!! Game Over.");
+    gameStarted = false;
+    clearInterval(timerInterval);
+}
+//tactical radar
+function isPathClear(startRow, startCol, endRow, endCol) {
+    let rowStep = Math.sign(endRow - startRow);
+    let colStep = Math.sign(endCol - startCol);
+    let currentRow = startRow + rowStep;
+    let currentCol = startCol + colStep;
+
+    while (currentRow !== endRow || currentCol !== endCol) {
+        
+        let square = document.querySelector(`td[data-row='${currentRow}'][data-col='${currentCol}']`);
+        if (square.dataset.piece!== "") {
+            return false; 
+        }
+        currentRow += rowStep;
+        currentCol += colStep;
+    }
+
+    return true; 
+}
 
 function isValidMove(startSquare, targetSquare){
-    let piece= startSquare.textContent
+    let piece= startSquare.dataset.piece
     let startRow= +startSquare.dataset.row;
     let startCol= +startSquare.dataset.col;
     let endRow= +targetSquare.dataset.row;
@@ -158,30 +195,30 @@ function isValidMove(startSquare, targetSquare){
     //The pawns can move to the squares in front of them(1space forward& 2space).
     //also it can diagnoally capture.
     if(piece === "♙"){
-        if(startCol===endCol && startRow-endRow === 1 && targetSquare.textContent === ""){
+        if(startCol===endCol && startRow-endRow === 1 && targetSquare.dataset.piece=== ""){
             return true;
         }
-        if(startCol===endCol && startRow === 6 && startRow-endRow === 2 && targetSquare.textContent === "") {
-            return true;
+        if(startCol===endCol && startRow === 6 && startRow-endRow === 2 && targetSquare.dataset.piece=== ""){
+            return isPathClear(startRow, startCol, endRow, endCol);
         }
-        if(rowDiff=== 1 && colDiff === 1 && startRow-endRow === 1 && targetSquare.textContent !== "") {
+        if(rowDiff=== 1 && colDiff === 1 && startRow-endRow === 1 && targetSquare.dataset.piece!== ""){
             return true;
         }
         return false;    
     }
     if(piece==="♟"){
-        if(startCol===endCol && endRow-startRow === 1 && targetSquare.textContent === "") {
+        if(startCol===endCol && endRow-startRow === 1 && targetSquare.dataset.piece=== ""){
             return true;
         }
-        if(startCol===endCol && startRow === 1 && endRow-startRow === 2 && targetSquare.textContent === "") {
-            return true;
+        if(startCol===endCol && startRow === 1 && endRow-startRow === 2 && targetSquare.dataset.piece=== ""){
+            return isPathClear(startRow, startCol, endRow, endCol);
         }
-        if(rowDiff === 1 && colDiff === 1 && endRow-startRow === 1 && targetSquare.textContent !== "") {
+        if(rowDiff === 1 && colDiff === 1 && endRow-startRow === 1 && targetSquare.dataset.piece!== ""){
             return true;
         }
         return false;
     }
-    return true;
+    return false;
 }
 
 function handleSquareClick(element){
@@ -195,7 +232,7 @@ function handleSquareClick(element){
             selectedSquare = null;
             return;
         }
-        let targetPiece= element.textContent;
+        let targetPiece= element.dataset.piece;
         if(currentTurn==="white"&& whitePiecesList.includes(targetPiece)){
             selectedSquare= element;
             return;
@@ -217,13 +254,26 @@ function handleSquareClick(element){
             gameStarted = false;
             clearInterval(timerInterval);
         }
-        element.textContent= selectedSquare.textContent;
-        selectedSquare.textContent= "";
+        element.dataset.piece= selectedSquare.dataset.piece;
+        element.innerHTML= selectedSquare.innerHTML;
+        selectedSquare.dataset.piece= "";
+        selectedSquare.innerHTML="";
         selectedSquare= null;
+        let landedRow = +element.dataset.row;
+        if (element.dataset.piece === "♙" && landedRow === 0){
+            element.dataset.piece = "♕";
+            element.innerHTML = `<img src="${pieceImages["♕"]}">`;
+            alert("White Pawn promoted to a Queen!");
+        }
+        else if (element.dataset.piece === "♟" && landedRow === 7){
+            element.dataset.piece = "♛";
+            element.innerHTML = `<img src="${pieceImages["♛"]}">`;
+            alert("Black Pawn promoted to a Queen!");
+        }
         currentTurn= (currentTurn==="white")? "black":"white";
         console.log("Turn:  "+ currentTurn);
     }else{
-        let pieceClicked= element.textContent;
+        let pieceClicked= element.dataset.piece;
         if (pieceClicked===""){
             return;
         }
@@ -254,3 +304,6 @@ document.getElementById("btn-restart").addEventListener("click", () => {
 document.getElementById("btn-forfeit").addEventListener("click", () => {
     forfeitGame();
 });
+document.getElementById("offer-draw").addEventListener("click", ()=>{
+    offerDraw();
+})
